@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>또박또박 한글 타자</title>
+<style>
+:root{--bg:#fff8e7;--card:#fff;--ink:#3b2f2f;--sub:#8a7a6a;--pri:#ff7a59;--ok:#2fb36d;--bad:#e5484d;--line:#f0e2c4;
+--f1:#ffd1dc;--f2:#ffe0b3;--f3:#fff3a8;--f4:#c8f0c0;--f5:#c0e6f5;--f6:#d9ccf5;--f7:#f5c6e8;--f8:#d5d5d5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#241f1a;--card:#332b24;--ink:#fff3e0;--sub:#c4b5a0;--line:#4a3f33;
+--f1:#7a4a58;--f2:#7a5f3a;--f3:#756a2a;--f4:#3f6a3a;--f5:#3a6478;--f6:#5a4a85;--f7:#7a4170;--f8:#555}}
+:root[data-theme="dark"]{--bg:#241f1a;--card:#332b24;--ink:#fff3e0;--sub:#c4b5a0;--line:#4a3f33;
+--f1:#7a4a58;--f2:#7a5f3a;--f3:#756a2a;--f4:#3f6a3a;--f5:#3a6478;--f6:#5a4a85;--f7:#7a4170;--f8:#555}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Jua","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body{min-height:100%;padding:16px}
+.wrap{max-width:860px;margin:0 auto}
+h1{font-size:28px;margin:4px 0 12px;text-align:center}
+.card{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:20px;margin-bottom:16px}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stage{border:3px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:14px;font:inherit;font-size:18px;cursor:pointer;text-align:center}
+.stage:hover{border-color:var(--pri);transform:translateY(-2px)}
+.stage b{display:block;font-size:34px;margin-bottom:4px}
+.stars{font-size:20px;letter-spacing:2px;min-height:28px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.btn{border:0;background:var(--pri);color:#fff;border-radius:999px;padding:10px 20px;font:inherit;font-size:16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--sub);border:2px solid var(--line)}
+.bar{height:14px;border-radius:99px;background:var(--line);overflow:hidden;flex:1}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.target{font-size:clamp(48px,14vw,96px);text-align:center;margin:8px 0;min-height:1.3em;letter-spacing:2px}
+.mascot{font-size:54px;text-align:center;transition:transform .2s}
+.bounce{transform:scale(1.3) rotate(-8deg)}
+.msg{text-align:center;color:var(--sub);min-height:1.5em;font-size:18px}
+input{display:block;width:100%;max-width:520px;margin:10px auto;font:inherit;font-size:34px;text-align:center;padding:10px;border-radius:18px;border:4px solid var(--line);background:var(--card);color:var(--ink);outline:none}
+input:focus{border-color:var(--pri)}
+input.bad{border-color:var(--bad);animation:sh .25s}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.kb{display:flex;flex-direction:column;gap:5px;width:100%;max-width:780px;margin:14px auto 0;--k:#e4e4e4;--kb:#c9c9c9;--kt:#333}
+.row{display:flex;gap:5px;width:100%}
+.key{flex:1 1 0;min-width:0;height:clamp(34px,8.5vw,54px);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(12px,3.2vw,20px);background:var(--k);border:2px solid var(--kb);color:var(--kt);line-height:1.05;user-select:none}
+.key small{font-size:clamp(8px,1.8vw,11px);color:#888}
+.key.fn{font-size:clamp(9px,2.3vw,14px);background:#d2d2d2}
+.key.sp{visibility:hidden}
+.key.hint{background:#ffe033;border-color:#e0b800;color:#222;animation:blink .7s infinite alternate;position:relative;z-index:1}
+.key.hint small{color:#554}
+@keyframes blink{from{background:#ffe033;box-shadow:0 0 14px 3px #ffd000}to{background:#fff8b0;box-shadow:none}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kb{--k:#555;--kb:#777;--kt:#eee}:root:not([data-theme="light"]) .key.fn{background:#444}:root:not([data-theme="light"]) .key small{color:#bbb}}
+:root[data-theme="dark"] .kb{--k:#555;--kb:#777;--kt:#eee}
+.legend{text-align:center;color:var(--sub);font-size:15px;margin-top:10px}
+.hidden{display:none}
+.result{text-align:center}
+.result .big{font-size:64px}
+.result .stars{font-size:48px}
+html,body{height:100%}
+body{padding:10px;overflow:auto}
+.wrap{height:100%;display:flex;flex-direction:column;max-width:860px}
+h1{font-size:clamp(18px,3.6vh,28px);margin:0 0 6px}
+#home,#end{flex:1;min-height:0;overflow:auto}
+#game{flex:1;min-height:0}
+#game .card{height:100%;margin:0;padding:clamp(8px,1.8vh,18px);display:flex;flex-direction:column;justify-content:space-between}
+.mascot{font-size:clamp(28px,6vh,54px);line-height:1.1}
+.target{font-size:clamp(40px,11vh,96px);margin:0;min-height:1.15em;line-height:1.15}
+.msg{font-size:clamp(14px,2.4vh,18px);min-height:1.3em}
+input{font-size:clamp(22px,4.6vh,34px);padding:clamp(4px,1vh,10px);margin:0 auto}
+.kb{margin:0 auto;gap:clamp(3px,.6vh,5px)}
+.row{gap:clamp(3px,.6vh,5px)}
+.key{height:clamp(28px,min(8.5vw,6.4vh),54px)}
+.legend{margin:0;font-size:clamp(12px,2vh,15px)}
+.mascot{height:clamp(44px,8vh,66px);display:flex;align-items:center;justify-content:center}
+.mascot svg{height:100%;width:auto}
+.mascot span{display:inline-block;line-height:1;transition:transform .4s}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⌨️ 또박또박 한글 타자</h1>
+
+  <div id="home">
+    <div class="card"><p style="text-align:center;font-size:18px;margin:0">단계를 골라 보세요! 화면에서 <b style="color:#d9a900">깜빡이는 노란 키</b>를 찾아 눌러요. 🐣<br><span style="color:var(--sub);font-size:15px">(한글 입력으로 바꾸고 시작해요: 한/영 키)</span></p></div>
+    <div class="stages" id="stages"></div>
+  </div>
+
+  <div id="game" class="hidden">
+    <div class="card">
+      <div class="top">
+        <button class="btn ghost" id="back">← 처음으로</button>
+        <div class="bar"><i id="prog"></i></div>
+        <span id="cnt">0/8</span>
+      </div>
+      <div class="mascot" id="mascot"></div>
+      <div class="target" id="target"></div>
+      <div class="msg" id="msg">위의 글자를 똑같이 쳐 보세요!</div>
+      <input id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="여기에 입력하세요">
+      <div class="kb" id="kb"></div>
+      <div class="legend">노란 키가 깜빡이면 그 키를 눌러요 ✨</div>
+    </div>
+  </div>
+
+  <div id="end" class="card result hidden">
+    <div class="big">🎉</div>
+    <h2 id="endt">참 잘했어요!</h2>
+    <div class="stars" id="endstars"></div>
+    <p id="endp"></p>
+    <button class="btn" id="again">다시 하기</button>
+    <button class="btn ghost" id="home2">다른 단계</button>
+  </div>
+</div>
+
+<script>
+const STAGES=[
+ {n:"숫자 · 지우기 · 엔터",e:"123",count:10,items:["1","3","5","7","9",
+   {t:"7",pre:"3"},{t:"456",pre:"123"},{t:"2026",pre:"1999"},
+   {t:"10",enter:true},{t:"365",enter:true},{t:"2026",enter:true},{t:"1234",enter:true}]},
+ {n:"자음",e:"ㄱ",items:"ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ".split("")},
+ {n:"모음",e:"ㅏ",items:"ㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣㅐㅔ".split("")},
+ {n:"한 글자 연습",e:"가",items:"가나다라마바사아자차카타파하고구소무너도까따빠싸짜꼬뿌쓰".split("")},
+ {n:"Shift 연습",e:"⇧",count:7,items:["ㄲ","ㄸ","ㅃ","ㅆ","ㅉ","!","?"]}
+];
+const LOW="ㅂq ㅈw ㄷe ㄱr ㅅt ㅛy ㅕu ㅑi ㅐo ㅔp ㅁa ㄴs ㅇd ㄹf ㅎg ㅗh ㅓj ㅏk ㅣl ㅋz ㅌx ㅊc ㅍv ㅠb ㅜn ㅡm".split(" ");
+const SH="ㅃQ ㅉW ㄸE ㄲR ㅆT ㅒO ㅖP".split(" ");
+const J2K={},K2J={};
+LOW.forEach(s=>{J2K[s[0]]={k:s[1],s:false};K2J[s[1]]=s[0]});
+SH.forEach(s=>{J2K[s[0]]={k:s[1].toLowerCase(),s:true}});
+const INIT=[..."ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"];
+const MED=[..."ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ"];
+const FIN=["",..."ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ"];
+const COMP={"ㅘ":"ㅗㅏ","ㅙ":"ㅗㅐ","ㅚ":"ㅗㅣ","ㅝ":"ㅜㅓ","ㅞ":"ㅜㅔ","ㅟ":"ㅜㅣ","ㅢ":"ㅡㅣ","ㄳ":"ㄱㅅ","ㄵ":"ㄴㅈ","ㄶ":"ㄴㅎ","ㄺ":"ㄹㄱ","ㄻ":"ㄹㅁ","ㄼ":"ㄹㅂ","ㄽ":"ㄹㅅ","ㄾ":"ㄹㅌ","ㄿ":"ㄹㅍ","ㅀ":"ㄹㅎ","ㅄ":"ㅂㅅ"};
+const SYM={".":{k:".",s:false},",":{k:",",s:false},"?":{k:"/",s:true},"!":{k:"1",s:true}};
+function tokens(str){
+  const out=[];
+  const push=c=>{for(const x of (COMP[c]||c))out.push(x)};
+  for(const ch of str){
+    const c=ch.charCodeAt(0);
+    if(c>=0xAC00&&c<=0xD7A3){const s=c-0xAC00;push(INIT[Math.floor(s/588)]);push(MED[Math.floor(s%588/28)]);const f=FIN[s%28];if(f)push(f)}
+    else out.push(ch);
+  }
+  return out;
+}
+const $=id=>document.getElementById(id);
+let save={};try{save=JSON.parse(localStorage.getItem("hangul-typing")||"{}")}catch(e){}
+function persist(){try{localStorage.setItem("hangul-typing",JSON.stringify(save))}catch(e){}}
+
+// keyboard
+const ROWS=[
+ {keys:"`1234567890-=",sh:"~!@#$%^&*()_+",tail:[["⌫ Backspace",2,"bs"]]},
+ {head:[["Tab",1.5]],keys:"qwertyuiop[]\\",sh:"",tail:[]},
+ {head:[["Caps",1.8]],keys:"asdfghjkl;'",sh:"",tail:[["Enter ↵",2.2,"enter"]]},
+ {head:[["Shift ⇧",2.3,"shift"]],keys:"zxcvbnm,./",sh:"",tail:[["Shift ⇧",2.7,"shift"]]}
+];
+const keyEls={shifts:[]};
+function mk(label,flex,cls){const e=document.createElement("div");e.className="key "+(cls||"");e.style.flex=flex+" 1 0";e.innerHTML=label;return e}
+function buildKb(){
+  const kb=$("kb");kb.innerHTML="";keyEls.shifts=[];
+  ROWS.forEach((r,ri)=>{
+    const d=document.createElement("div");d.className="row";
+    (r.head||[]).forEach(h=>{const e=mk(h[0],h[1],"fn");if(h[2]==="shift")keyEls.shifts.push(e);d.appendChild(e)});
+    [...r.keys].forEach((k,i)=>{
+      const kor=K2J[k];
+      const e=mk(kor?`${kor}<small>${k.toUpperCase()}</small>`:`${k}${r.sh[i]?`<small>${r.sh[i]}</small>`:""}`,1);
+      keyEls[k]=e;d.appendChild(e);
+    });
+    (r.tail||[]).forEach(h=>{const e=mk(h[0],h[1],"fn");if(h[2]==="shift")keyEls.shifts.push(e);else keyEls[h[2]]=e;d.appendChild(e)});
+    kb.appendChild(d);
+  });
+  const d=document.createElement("div");d.className="row";
+  d.appendChild(mk("",3.5,"sp"));
+  const sp=mk("Space 띄어쓰기",7,"fn");keyEls[" "]=sp;d.appendChild(sp);
+  d.appendChild(mk("",4.5,"sp"));
+  kb.appendChild(d);
+}
+function setHint(tok){
+  Object.values(keyEls).forEach(e=>e.classList&&e.classList.remove("hint"));
+  keyEls.shifts.forEach(e=>e.classList.remove("hint"));
+  if(tok==null)return;
+  if(tok==="BS"){keyEls.bs.classList.add("hint");return}
+  if(tok==="ENTER"){keyEls.enter.classList.add("hint");return}
+  let m=J2K[tok]||SYM[tok]||{k:tok,s:false};
+  const el=keyEls[m.k];if(!el)return;
+  el.classList.add("hint");
+  if(m.s){const left="qwertasdfgzxcvb`12345".includes(m.k);keyEls.shifts[left?1:0].classList.add("hint")}
+}
+
+// sound
+let ac;
+function beep(f,d=0.12,t="sine"){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.value=.12;o.connect(g);g.connect(ac.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.stop(ac.currentTime+d)}catch(e){}}
+
+// growing animals
+function egg(level,fill){
+  const body="M50 8C78 8 92 55 92 78C92 102 74 114 50 114C26 114 8 102 8 78C8 55 22 8 50 8Z";
+  const zz="L20 62L32 74L44 62L56 74L68 62L80 74L92 66";
+  let inner="";
+  if(level<3){
+    inner=`<path d="${body}" fill="${fill}" stroke="#8a6d3b" stroke-width="4"/><circle cx="38" cy="40" r="4" fill="#0002"/><circle cx="62" cy="62" r="5" fill="#0002"/>`;
+    if(level===1)inner+='<path d="M42 44L50 56L43 64L52 74" fill="none" stroke="#5a4325" stroke-width="3.5" stroke-linejoin="round"/>';
+    if(level===2)inner+='<path d="M12 66L26 56L36 72L50 54L62 72L76 56L88 68M50 54L46 38M36 72L32 88" fill="none" stroke="#5a4325" stroke-width="3.5" stroke-linejoin="round"/>';
+  }else{
+    inner=`<path d="M8 70${zz}L92 78C92 102 74 114 50 114C26 114 8 102 8 78Z" fill="${fill}" stroke="#8a6d3b" stroke-width="4" stroke-linejoin="round"/>
+    <text x="50" y="78" text-anchor="middle" font-size="26">\u{1F440}</text>
+    <path d="M8 70${zz}C92 40 78 8 50 8C22 8 8 40 8 70Z" fill="${fill}" stroke="#8a6d3b" stroke-width="4" stroke-linejoin="round" transform="translate(16,-22) rotate(24 50 60)"/>`;
+  }
+  return `<svg viewBox="0 0 120 124" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
+const GROW=[
+ {c:"#fff3d6",f:["\u{1F423}","\u{1F425}","\u{1F424}","\u{1F413}","\u{1F414}"]},          // chicken
+ {c:"#b9e8a8",f:["\u{1F98E}","\u{1F98E}","\u{1F40A}","\u{1F996}","\u{1F995}"]},       // dino
+ {c:"#e3f2b0",f:["\u{1F41B}","\u{1F41B}","\u{1F41B}","\u{1F98B}","\u{1F98B}"]},       // butterfly
+ {c:"#bfe0f7",f:["\u{1F422}","\u{1F422}","\u{1F422}","\u{1F422}","\u{1F422}"]},       // turtle
+ {c:"#f9c9ec",f:["\u{1F434}","\u{1F434}","\u{1F40E}","\u{1F984}","\u{1F984}"]}        // unicorn
+];
+function showMascot(done,total){
+  const g=GROW[cur%GROW.length],N=9;
+  const i=Math.min(N-1,Math.round(done/total*(N-1)));
+  const m=$("mascot");
+  if(i<4)m.innerHTML=egg(i,g.c);
+  else{const k=i-4;const sc=(0.7+0.3*k/4).toFixed(2);m.innerHTML=`<span style="transform:scale(${sc})">${g.f[k]}</span>`}
+  return i;
+}
+
+// game
+let cur=0,items=[],idx=0,mistakes=0,wasOk=true,locked=false,waitEnter=false,item=null;
+const PRAISE=["잘했어요!","멋져요!","최고예요!","대단해요!","와, 빨라요!","정확해요!"];
+const MASC=["🐣","🐥","🐰","🐼","🦊","🐯"];
+function renderHome(){
+  const s=$("stages");s.innerHTML="";
+  STAGES.forEach((st,i)=>{
+    const b=document.createElement("button");b.className="stage";
+    const n=save[i]||0;
+    b.innerHTML=`<b>${st.e}</b>${i+1}. ${st.n}<div class="stars">${"⭐".repeat(n)}${"☆".repeat(3-n)}</div>`;
+    b.onclick=()=>start(i);s.appendChild(b);
+  });
+}
+function show(id){["home","game","end"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
+function start(i){
+  cur=i;const pool=[...STAGES[i].items].sort(()=>Math.random()-.5);
+  items=pool.slice(0,STAGES[i].count||8).map(x=>typeof x==="string"?{t:x}:x);idx=0;mistakes=0;show("game");buildKb();next();
+}
+function next(){
+  locked=false;waitEnter=false;const inp=$("inp");inp.classList.remove("bad");
+  if(idx>=items.length)return finish();
+  item=items[idx];inp.value=item.pre||"";wasOk=!item.pre;
+  $("target").textContent=item.t;$("cnt").textContent=`${idx}/${items.length}`;
+  $("prog").style.width=(idx/items.length*100)+"%";
+  showMascot(idx,items.length);
+  if(item.pre){$("msg").textContent="틀린 글자예요! ⌫ 백스페이스로 지우고 다시 써요";setHint("BS")}
+  else{$("msg").textContent=idx===0?"위의 글자를 똑같이 쳐 보세요!":"";setHint(tokens(item.t)[0])}
+  inp.focus();
+}
+function done(){
+  const fi=showMascot(idx+1,items.length);
+  locked=true;waitEnter=false;setHint(null);
+  $("msg").textContent=PRAISE[Math.floor(Math.random()*PRAISE.length)]+" 🎉"+(fi>=1&&fi<=3?" 알이 깨지고 있어요! 🥚":fi===4?" 알에서 아기가 태어났어요! 🐣":fi===8?" 어른이 되었어요! 🌟":"");
+  const m=$("mascot");m.classList.add("bounce");beep(784,.15);setTimeout(()=>beep(988,.2),120);
+  setTimeout(()=>{m.classList.remove("bounce");$("inp").blur();idx++;next()},700);
+}
+function onInput(){
+  if(locked)return;
+  const inp=$("inp"),T=tokens(item.t),Y=tokens(inp.value);
+  const ok=Y.length<=T.length&&Y.every((t,i)=>t===T[i]);
+  waitEnter=false;
+  if(!ok){
+    inp.classList.add("bad");if(wasOk){mistakes++;beep(180,.15,"square")}
+    wasOk=false;
+    $("msg").textContent=item.pre?"⌫ 백스페이스로 글자를 지워요":"앗! ⌫ 백스페이스로 지우고 다시 해 봐요";
+    setHint("BS");return;
+  }
+  inp.classList.remove("bad");wasOk=true;$("msg").textContent="";
+  if(Y.length>0)beep(520+Y.length*40,.06);
+  if(Y.length===T.length){
+    if(item.enter){waitEnter=true;setHint("ENTER");$("msg").textContent="다 썼어요! ↵ 엔터 키를 눌러요";beep(660,.1)}
+    else done();
+  }else setHint(T[Y.length]);
+}
+function onKey(e){
+  if(e.code==="Enter"||e.key==="Enter"){
+    if(locked)return;
+    if(waitEnter){e.preventDefault();done()}
+    else if(item&&item.enter){e.preventDefault();$("msg").textContent="아직이에요! 글자를 먼저 다 써요"}
+  }
+}
+function finish(){
+  const stars=mistakes<=2?3:mistakes<=5?2:1;
+  if(stars>(save[cur]||0)){save[cur]=stars;persist()}
+  show("end");
+  $("endstars").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
+  $("endt").textContent=stars===3?"완벽해요! 타자 박사님!":stars===2?"참 잘했어요!":"끝까지 해냈어요!";
+  $("endp").textContent=`틀린 횟수: ${mistakes}번`;
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.2),i*140));
+}
+$("inp").addEventListener("keydown",onKey);
+$("inp").addEventListener("input",onInput);
+$("inp").addEventListener("compositionupdate",()=>setTimeout(onInput,0));
+$("back").onclick=()=>{renderHome();show("home")};
+$("home2").onclick=()=>{renderHome();show("home")};
+$("again").onclick=()=>start(cur);
+document.addEventListener("click",e=>{if(!$("game").classList.contains("hidden")&&e.target.tagName!=="BUTTON")$("inp").focus()});
+renderHome();
+</script>
+</body>
+</html>
